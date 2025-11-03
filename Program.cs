@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services; // <-- 1. AÑADIR ESTE USING
 using Microsoft.EntityFrameworkCore;
 using SeguimientoDeDespacho.Data;
+using SeguimientoDeDespacho.Services; // <-- 2. AÑADIR ESTE USING
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,15 +12,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Habilita Identity, Roles y deshabilita la confirmación de email
+// Modificar esta línea
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>() 
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders(); // <-- 3. AÑADIR ESTO (Importante para generar el token)
 
 builder.Services.AddControllersWithViews();
 
+// --- INICIO DE MODIFICACIÓN HU02 ---
+// 4. Registrar nuestro servicio falso de email
+builder.Services.AddTransient<IEmailSender, DummyEmailSender>();
+// --- FIN DE MODIFICACIÓN HU02 ---
+
+
 var app = builder.Build();
 
+// --- INICIO DE SEEDING (SEMBRADO) ---
+// (Este bloque ya lo tenías, déjalo como está)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -28,10 +39,7 @@ using (var scope = app.Services.CreateScope())
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
-        // 1. Llamar a la función para crear Roles
         await SeedRoles(roleManager);
-        
-        // 2. Llamar a la función para crear Usuarios
         await SeedUsers(userManager);
 
         logger.LogInformation("Base de datos sembrada exitosamente (Roles y Usuarios).");
@@ -41,6 +49,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Un error ocurrió al sembrar la base de datos.");
     }
 }
+// --- FIN DE SEEDING ---
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -54,10 +64,10 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); 
+app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication();
+app.UseAuthentication(); // <-- Ya lo tenías
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -74,10 +84,9 @@ app.Run();
 
 
 // --- FUNCIONES DE SEEDING ---
-
+// (Estas funciones ya las tenías, déjalas como están)
 async Task SeedRoles(RoleManager<IdentityRole> roleManager)
 {
-    // Función para crear los roles "Admin" y "Cliente"
     string[] roleNames = { "Admin", "Cliente" };
     foreach (var roleName in roleNames)
     {
@@ -99,9 +108,8 @@ async Task SeedUsers(UserManager<IdentityUser> userManager)
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true // Se salta la confirmación de email
+            EmailConfirmed = true 
         };
-        // Contraseña: "Admin123!"
         var result = await userManager.CreateAsync(adminUser, "Admin123!");
         if (result.Succeeded)
         {
@@ -117,9 +125,8 @@ async Task SeedUsers(UserManager<IdentityUser> userManager)
         {
             UserName = clienteEmail,
             Email = clienteEmail,
-            EmailConfirmed = true // Se salta la confirmación de email
+            EmailConfirmed = true 
         };
-        // Contraseña: "Cliente123!"
         var result = await userManager.CreateAsync(clienteUser, "Cliente123!");
         if (result.Succeeded)
         {
@@ -127,4 +134,3 @@ async Task SeedUsers(UserManager<IdentityUser> userManager)
         }
     }
 }
-
