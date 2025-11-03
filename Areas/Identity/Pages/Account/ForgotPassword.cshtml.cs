@@ -62,7 +62,6 @@ namespace SeguimientoDeDespacho.Areas.Identity.Pages.Account
                     "Restablecer Contraseña",
                     $"Por favor restablece tu contraseña haciendo clic <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>aquí</a>.");
 
-                // Redirigimos a la página de confirmación
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
 

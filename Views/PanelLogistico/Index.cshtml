@@ -1,8 +1,68 @@
+@model PanelLogisticoViewModel
+@using SeguimientoDeDespacho.Models 
 @{
     ViewData["Title"] = "Panel Logístico";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Bienvenido, Admin</h1>
-    <p>Este es el Panel Logístico.</p>
+<h1 class="display-4">@ViewData["Title"]</h1>
+<p>Resumen rápido del estado de las operaciones.</p>
+
+<hr />
+
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.TotalDespachos</h3>
+                <p>Total Despacho</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.DespachosEnProceso</h3>
+                <p>Despacho en Proceso</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-truck-loading"></i>
+            </div>
+            <a asp-controller="ListadoDespachos" asp-action="Index" asp-route-filtroEstado="@EstadoDespacho.EnProceso.ToString()" class="small-box-footer">
+                Más info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@Model.DespachosCulminados</h3>
+                <p>Despachos Culminados</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <a asp-controller="ListadoDespachos" asp-action="Index" asp-route-filtroEstado="@EstadoDespacho.Culminado.ToString()" class="small-box-footer">
+                Más info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@Model.IndicadorRendimiento<sup style="font-size: 20px">%</sup></h3>
+                <p>Indicadores (Rendimiento)</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
 </div>
