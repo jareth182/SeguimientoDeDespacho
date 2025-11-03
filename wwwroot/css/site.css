@@ -29,3 +29,77 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.small-box {
+    border-radius: .25rem;
+    box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+    display: block;
+    margin-bottom: 20px;
+    position: relative;
+    color: #fff;
+    overflow: hidden; /* Para que el ícono no se salga */
+}
+
+.small-box > .inner {
+    padding: 10px;
+}
+
+.small-box h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.small-box p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem; /* Espacio añadido */
+}
+
+.small-box > .small-box-footer {
+    background-color: rgba(0,0,0,.1);
+    color: rgba(255,255,255,.8);
+    display: block;
+    padding: 3px 0;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    z-index: 10;
+}
+
+.small-box > .small-box-footer:hover {
+    background-color: rgba(0,0,0,.15);
+    color: #fff;
+}
+
+/* Iconos (requiere FontAwesome) */
+.small-box .icon {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 70px; /* Tamaño del icono */
+    opacity: 0.2; /* Transparencia */
+    transition: all .3s linear;
+    z-index: 0;
+    color: rgba(0,0,0,.15);
+}
+
+.small-box:hover .icon {
+    font-size: 75px; /* Efecto al pasar el mouse */
+}
+
+/* Colores de las tarjetas */
+.bg-info { background-color: #17a2b8 !important; }
+.bg-warning { background-color: #ffc107 !important; color: #1f2d3d !important; } /* Texto oscuro para naranja */
+.bg-success { background-color: #28a745 !important; }
+
+/* Ajuste de color de texto para tarjeta naranja */
+.bg-warning > .small-box-footer {
+    color: #1f2d3d !important;
+    opacity: .7;
+}
+.bg-warning > .small-box-footer:hover {
+    color: #000 !important;
+    opacity: 1;
+}

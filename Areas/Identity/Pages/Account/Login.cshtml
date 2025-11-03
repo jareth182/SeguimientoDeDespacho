@@ -1,0 +1,76 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form id="account" method="post">
+                <h2>Usa una cuenta local para ingresar.</h2>
+                <hr />
+                
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" id="password-field" autocomplete="current-password" aria-required="true" />
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    
+                    <span id="toggle-password" style="cursor: pointer; position: absolute; right: 10px; top: 35%; transform: translateY(-50%);">
+                        👁️
+                    </span>
+                    
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                
+                <div class="checkbox mb-3">
+                    <label asp-for="Input.RememberMe" class="form-label">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+                <div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Continuar</button>
+                </div>
+
+                <!-- --- INICIO DE MODIFICACIÓN HU02 --- -->
+                <div class="mt-3">
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword">¿Olvidaste tu contraseña?</a>
+                    </p>
+                </div>
+
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordField = document.getElementById('password-field');
+
+            if (togglePassword && passwordField) {
+                togglePassword.addEventListener('click', function (e) {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+                    
+                    this.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
+        });
+    </script>
+}
+

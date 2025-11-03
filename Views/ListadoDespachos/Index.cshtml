@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Listado de Despachos (HU09)";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Esta es la página placeholder para la HU09.</p>
+
+<hr />
+
+@if(ViewData["FiltroAplicado"] != null)
+{
+    <div class="alert alert-info">
+        <strong>Filtro aplicado (Criterio 3 OK):</strong> @ViewData["FiltroAplicado"]
+    </div>
+}
