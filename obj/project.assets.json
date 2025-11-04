@@ -7021,11 +7021,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\JARETH\\SeguimientoDeDespacho\\SeguimientoDeDespacho.csproj",
+      "projectUniqueName": "C:\\Users\\JARETH\\Desktop\\SeguimientoDeDespacho\\SeguimientoDeDespacho.csproj",
       "projectName": "SeguimientoDeDespacho",
-      "projectPath": "C:\\Users\\JARETH\\SeguimientoDeDespacho\\SeguimientoDeDespacho.csproj",
+      "projectPath": "C:\\Users\\JARETH\\Desktop\\SeguimientoDeDespacho\\SeguimientoDeDespacho.csproj",
       "packagesPath": "C:\\Users\\JARETH\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\JARETH\\SeguimientoDeDespacho\\obj\\",
+      "outputPath": "C:\\Users\\JARETH\\Desktop\\SeguimientoDeDespacho\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

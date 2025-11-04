@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services; // <-- 1. AÑADIR ESTE USING
+using Microsoft.AspNetCore.Identity.UI.Services; 
 using Microsoft.EntityFrameworkCore;
 using SeguimientoDeDespacho.Data;
-using SeguimientoDeDespacho.Services; // <-- 2. AÑADIR ESTE USING
+using SeguimientoDeDespacho.Services; 
+using SeguimientoDeDespacho.Models; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,22 +15,19 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Modificar esta línea
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>()
+    .AddRoles<IdentityRole>() // Habilita Roles
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders(); // <-- 3. AÑADIR ESTO (Importante para generar el token)
+    .AddDefaultTokenProviders(); // Para el reseteo de contraseña
 
 builder.Services.AddControllersWithViews();
 
-// --- INICIO DE MODIFICACIÓN HU02 ---
-// 4. Registrar nuestro servicio falso de email
+// Registrar nuestro servicio falso de email
 builder.Services.AddTransient<IEmailSender, DummyEmailSender>();
-// --- FIN DE MODIFICACIÓN HU02 ---
 
 
 var app = builder.Build();
 
 // --- INICIO DE SEEDING (SEMBRADO) ---
-// (Este bloque ya lo tenías, déjalo como está)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -38,11 +36,14 @@ using (var scope = app.Services.CreateScope())
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+        var dbContext = services.GetRequiredService<ApplicationDbContext>(); 
 
-        await SeedRoles(roleManager);
-        await SeedUsers(userManager);
-
-        logger.LogInformation("Base de datos sembrada exitosamente (Roles y Usuarios).");
+        // El orden es importante:
+        await SeedRoles(roleManager, logger); // 1. Crear Roles
+        await SeedUsers(userManager, logger); // 2. Crear Usuarios
+        await SeedDespachos(dbContext, logger); // 3. Crear Despachos
+        
+        logger.LogInformation("Base de datos sembrada exitosamente (Roles, Usuarios y Despachos).");
     }
     catch (Exception ex)
     {
@@ -67,7 +68,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication(); // <-- Ya lo tenías
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -84,21 +85,27 @@ app.Run();
 
 
 // --- FUNCIONES DE SEEDING ---
-// (Estas funciones ya las tenías, déjalas como están)
-async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+
+async Task SeedRoles(RoleManager<IdentityRole> roleManager, ILogger<Program> logger)
 {
+    // Función para crear los roles "Admin" y "Cliente"
     string[] roleNames = { "Admin", "Cliente" };
     foreach (var roleName in roleNames)
     {
         var roleExist = await roleManager.RoleExistsAsync(roleName);
         if (!roleExist)
         {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
+            var result = await roleManager.CreateAsync(new IdentityRole(roleName));
+            if (result.Succeeded) {
+                logger.LogInformation($"Rol '{roleName}' creado exitosamente.");
+            } else {
+                logger.LogWarning($"Error al crear el rol '{roleName}'.");
+            }
         }
     }
 }
 
-async Task SeedUsers(UserManager<IdentityUser> userManager)
+async Task SeedUsers(UserManager<IdentityUser> userManager, ILogger<Program> logger)
 {
     // 1. Crear usuario Administrador
     string adminEmail = "admin@correo.com";
@@ -110,10 +117,27 @@ async Task SeedUsers(UserManager<IdentityUser> userManager)
             Email = adminEmail,
             EmailConfirmed = true 
         };
+        // Contraseña: "Admin123!"
         var result = await userManager.CreateAsync(adminUser, "Admin123!");
+        
         if (result.Succeeded)
         {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
+            logger.LogInformation("Usuario 'Admin' creado.");
+            // --- INICIO DE LA CORRECCIÓN ---
+            // Nos aseguramos de que el rol "Admin" exista ANTES de asignarlo
+            if (await userManager.IsInRoleAsync(adminUser, "Admin") == false)
+            {
+                var roleResult = await userManager.AddToRoleAsync(adminUser, "Admin");
+                if (roleResult.Succeeded)
+                {
+                    logger.LogInformation("Rol 'Admin' asignado al usuario 'Admin'.");
+                }
+                else
+                {
+                    logger.LogError("ERROR: No se pudo asignar el rol 'Admin' al usuario 'Admin'.");
+                }
+            }
+            // --- FIN DE LA CORRECCIÓN ---
         }
     }
 
@@ -127,10 +151,59 @@ async Task SeedUsers(UserManager<IdentityUser> userManager)
             Email = clienteEmail,
             EmailConfirmed = true 
         };
+        // Contraseña: "Cliente123!"
         var result = await userManager.CreateAsync(clienteUser, "Cliente123!");
         if (result.Succeeded)
         {
-            await userManager.AddToRoleAsync(clienteUser, "Cliente");
+            logger.LogInformation("Usuario 'Cliente' creado.");
+            // --- INICIO DE LA CORRECCIÓN ---
+            if (await userManager.IsInRoleAsync(clienteUser, "Cliente") == false)
+            {
+                var roleResult = await userManager.AddToRoleAsync(clienteUser, "Cliente");
+                 if (roleResult.Succeeded)
+                {
+                    logger.LogInformation("Rol 'Cliente' asignado al usuario 'Cliente'.");
+                }
+                else
+                {
+                    logger.LogError("ERROR: No se pudo asignar el rol 'Cliente' al usuario 'Cliente'.");
+                }
+            }
+            // --- FIN DE LA CORRECCIÓN ---
         }
     }
 }
+
+async Task SeedDespachos(ApplicationDbContext context, ILogger<Program> logger)
+{
+    // Función para crear Despachos de prueba si no existen
+    if (!context.Despachos.Any())
+    {
+        context.Despachos.AddRange(
+            new Despacho
+            {
+                NumeroGuia = "T-001",
+                ClienteNombre = "Cliente A",
+                Estado = EstadoDespacho.EnProceso,
+                FechaCreacion = DateTime.Now.AddDays(-2)
+            },
+            new Despacho
+            {
+                NumeroGuia = "T-002",
+                ClienteNombre = "Cliente B",
+                Estado = EstadoDespacho.EnProceso,
+                FechaCreacion = DateTime.Now.AddDays(-1)
+            },
+            new Despacho
+            {
+                NumeroGuia = "T-003",
+                ClienteNombre = "Cliente C",
+                Estado = EstadoDespacho.Culminado,
+                FechaCreacion = DateTime.Now.AddDays(-3)
+            }
+        );
+        await context.SaveChangesAsync();
+        logger.LogInformation("Despachos de prueba creados.");
+    }
+}
+

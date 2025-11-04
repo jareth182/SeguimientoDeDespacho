@@ -1,0 +1,189 @@
+/* * ========================================
+ * ESTILOS PROFESIONALES DEL DASHBOARD ADMIN
+ * Versión Corregida (Sidebar Claro)
+ * ========================================
+ */
+
+/* --- 1. ESTILOS DEL LAYOUT (Esqueleto) --- */
+:root {
+    --sidebar-width: 250px;
+    
+    /* --- INICIO DE LA CORRECCIÓN DE COLOR --- */
+    /* Colores "Grises y Claros" (Balsamiq) */
+    --sidebar-bg: #E9ECEF; /* Gris claro (Sidebar) */
+    --sidebar-link-color: #007bff; /* Texto azul (Balsamiq) */
+    --sidebar-link-hover: #0056b3; /* Azul oscuro (Hover) */
+    --sidebar-link-active-bg: #007bff; /* Fondo azul (Activo) */
+    --sidebar-link-active-color: #FFFFFF; /* Texto blanco (Activo) */
+    
+    --header-height: 57px;
+    --header-bg: #282828; /* Gris casi negro (Header) */
+    --header-color: #FFFFFF; /* Texto blanco (Header) */
+    
+    --content-bg: #ffffff; /* Fondo blanco (Contenido) */
+    /* --- FIN DE LA CORRECCIÓN DE COLOR --- */
+}
+
+body {
+    background-color: var(--content-bg);
+    overflow-x: hidden;
+}
+
+.wrapper { position: relative; min-height: 100vh; }
+
+/* Header (Barra Superior) */
+.main-header {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--header-height); z-index: 1030;
+    background-color: var(--header-bg) !important;
+    color: var(--header-color);
+    padding-left: var(--sidebar-width);
+    transition: padding-left 0.3s ease-in-out;
+}
+.main-header .navbar-brand { color: var(--header-color); font-weight: bold; }
+.main-header .nav-link { color: var(--header-color) !important; }
+
+/* Sidebar (Barra Lateral) */
+.main-sidebar {
+    position: fixed; top: 0; left: 0;
+    height: 100vh; width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    z-index: 1040;
+    transition: transform 0.3s ease-in-out;
+    padding-top: 0; 
+    border-right: 1px solid #dee2e6; /* Borde sutil */
+}
+.brand-link {
+    display: block; text-align: center;
+    text-decoration: none; font-size: 1.25rem;
+    font-weight: 300;
+    border-bottom: 1px solid #dee2e6; /* Borde sutil */
+    height: var(--header-height);
+    line-height: var(--header-height);
+    padding: 0;
+    color: var(--sidebar-link-color); /* Texto azul */
+    background-color: #fff; /* Fondo blanco para el logo */
+}
+.brand-link strong { font-weight: 700; }
+
+.sidebar-nav { padding-top: 10px; }
+.nav-sidebar .nav-item { width: 100%; }
+.nav-sidebar .nav-link {
+    color: var(--sidebar-link-color);
+    padding: 10px 15px; display: flex;
+    align-items: center; text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.9rem;
+    font-weight: 500; /* Un poco más de peso */
+}
+.nav-sidebar .nav-link:hover {
+    background-color: rgba(0,0,0,0.05); /* Sombreado ligero */
+    color: var(--sidebar-link-hover);
+}
+.nav-sidebar .nav-link.active {
+    background-color: var(--sidebar-link-active-bg);
+    color: var(--sidebar-link-active-color);
+}
+.nav-sidebar .nav-icon {
+    width: 1.6rem; margin-right: 0.2rem;
+    text-align: center;
+}
+.nav-treeview {
+    display: none; list-style: none; padding: 0;
+    padding-left: 20px;
+}
+.nav-item.menu-open > .nav-treeview { display: block; }
+.nav-item.menu-open > .nav-link .right { transform: rotate(-90deg); }
+.nav-link .right {
+    transition: transform .3s ease-in-out; margin-left: auto;
+}
+
+/* Contenido Principal */
+.content-wrapper {
+    padding-top: calc(var(--header-height) + 20px);
+    padding-left: calc(var(--sidebar-width) + 20px);
+    padding-right: 20px;
+    min-height: 100vh;
+    transition: padding-left 0.3s ease-in-out;
+}
+
+/* Overlay (Móvil) */
+.sidebar-overlay {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5); z-index: 1035;
+}
+
+/* Media Queries (Móvil) */
+@media (max-width: 992px) {
+    .main-header { padding-left: 0; }
+    .main-sidebar { transform: translateX(calc(var(--sidebar-width) * -1)); }
+    .content-wrapper {
+        margin-left: 0; padding-left: 15px; padding-right: 15px;
+        padding-top: calc(var(--header-height) + 15px);
+    }
+    body.sidebar-open .main-sidebar { transform: translateX(0); }
+    body.sidebar-open .sidebar-overlay { display: block; }
+}
+@media (min-width: 993px) {
+    .sidebar-toggle-btn { display: none; }
+}
+
+/* --- 2. ESTILOS DEL CONTENIDO (Tarjetas) --- */
+/* (Estos estilos ya estaban bien, los mantenemos) */
+
+.content-header {
+    padding: 15px 0.5rem;
+    padding-top: 0;
+}
+.content-header h1 { font-size: 1.8rem; margin: 0; }
+.breadcrumb { margin-bottom: 0; font-size: 0.9rem; }
+.content { padding: 0 0.5rem; }
+
+.small-box {
+    border-radius: .25rem;
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    display: block; margin-bottom: 20px;
+    position: relative;
+    color: #fff !important; 
+}
+.small-box > .inner { padding: 10px; }
+.small-box h3 {
+    font-size: 2.2rem; font-weight: 700;
+    margin: 0 0 10px 0; padding: 0;
+    white-space: nowrap;
+}
+.small-box p { font-size: 1rem; }
+.small-box .icon {
+    position: absolute; top: 15px; right: 15px;
+    z-index: 0; font-size: 70px;
+    color: rgba(0,0,0,.15);
+    transition: all .3s linear;
+}
+.small-box:hover .icon { font-size: 75px; }
+.small-box > .small-box-footer {
+    background-color: rgba(0,0,0,.1);
+    color: rgba(255,255,255,.8);
+    display: block; padding: 3px 0;
+    position: relative; text-align: center;
+    text-decoration: none; z-index: 10;
+}
+.small-box > .small-box-footer:hover {
+    background-color: rgba(0,0,0,.15); color: #fff;
+}
+.bg-info { background-color: #17a2b8 !important; }
+.bg-warning { background-color: #ffc107 !important; }
+.bg-success { background-color: #28a745 !important; }
+.bg-warning > .inner,
+.bg-warning h3,
+.bg-warning p {
+    color: #1f2d3d !important; 
+}
+.bg-warning > .small-box-footer {
+    background-color: rgba(0,0,0,.1);
+    color: #1f2d3d !important;
+    opacity: .7;
+}
+.bg-warning > .small-box-footer:hover {
+    color: #000 !important; opacity: 1;
+}
