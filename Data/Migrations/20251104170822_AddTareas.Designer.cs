@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SeguimientoDeDespacho.Data;
 
@@ -10,9 +11,11 @@ using SeguimientoDeDespacho.Data;
 namespace SeguimientoDeDespacho.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251104170822_AddTareas")]
+    partial class AddTareas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
@@ -236,27 +239,6 @@ namespace SeguimientoDeDespacho.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Despachos");
-                });
-
-            modelBuilder.Entity("SeguimientoDeDespacho.Models.MensajeModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Contenido")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("FechaEnvio")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Leido")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Mensajes");
                 });
 
             modelBuilder.Entity("SeguimientoDeDespacho.Models.Tarea", b =>
