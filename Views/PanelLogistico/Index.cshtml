@@ -160,30 +160,28 @@
         
         const addEventModal = new bootstrap.Modal(document.getElementById('addEventModal'));
         
+        // --- AÑADIDO: Declarar 'calendar' aquí para que AJAX lo pueda usar ---
+        var calendar; 
+        
         // ---- INICIO DE LÓGICA HU05 (CRITERIO 2) ----
         
         $('#btnGuardarEvento').on('click', function () {
             
-            // a. Obtener los datos del modal
             var tituloEvento = $('#eventTitle').val();
             var fechaEvento = $('#eventDate').val();
-            
-            // b. Obtener el token de seguridad
             var token = $('input[name="__RequestVerificationToken"]').val();
 
-            // c. Enviar datos al controlador vía AJAX
             $.ajax({
-                url: '@Url.Action("GuardarEvento", "PanelLogistico")', // Llama a la acción del controlador
+                url: '@Url.Action("GuardarEvento", "PanelLogistico")', 
                 type: 'POST',
                 data: {
-                    __RequestVerificationToken: token, // Envía el token
+                    __RequestVerificationToken: token, 
                     titulo: tituloEvento,
                     fecha: fechaEvento
                 },
                 success: function (response) {
                     if (response.success) {
                         
-                        // d. Actualizar la lista "Agendado" dinámicamente
                         var nuevaTarea = response.tarea;
                         var tareaHtml = '<li data-id="' + nuevaTarea.id + '">' +
                                         '<i class="fas fa-xs fa-chevron-right me-1"></i> ' +
@@ -191,15 +189,19 @@
                                       '</li>';
                         $('#lista-agendado').append(tareaHtml);
 
-                        // e. Actualizar el contador "Agendado"
                         var contadorSpan = $('#contador-agendado');
                         var contadorActual = parseInt(contadorSpan.text()) || 0;
                         contadorSpan.text(contadorActual + 1);
 
-                        // f. Cerrar y limpiar el modal
                         addEventModal.hide();
                         $('#eventTitle').val('');
                         $('#eventDate').val('');
+
+                        // --- AÑADIDO: Refrescar el calendario para mostrar el nuevo evento ---
+                        if (calendar) {
+                            calendar.refetchEvents();
+                        }
+                        // --- FIN DE CÓDIGO AÑADIDO ---
 
                     } else {
                         alert('Error al guardar: ' + response.message);
@@ -218,8 +220,12 @@
         const calendarEl = document.getElementById('calendar-widget-simple');
 
         if (calendarEl) {
-            const calendar = new FullCalendar.Calendar(calendarEl, {
+            // --- AÑADIDO: Asignar a la variable global ---
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 
+                // --- AÑADIDO: Cargar eventos desde el controlador (GET) ---
+                events: '@Url.Action("ObtenerEventos", "PanelLogistico")',
+
                 initialView: 'dayGridMonth', 
                 locale: 'es', 
                 height: 'auto', 
