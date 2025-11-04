@@ -1,8 +1,8 @@
 @model PanelLogisticoViewModel
-@using SeguimientoDeDespacho.Models 
+@using SeguimientoDeDespacho.Models
 @{
     ViewData["Title"] = "Panel Logístico";
-    Layout = "_AdminLayout"; // <-- ¡AÑADE ESTA LÍNEA AL INICIO!
+    Layout = "_AdminLayout";
 }
 
 <section class="content-header">
@@ -24,61 +24,136 @@
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>@Model.TotalDespachos</h3>
-                        <p>Total Despacho</p>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-6 col-12">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>@Model.TotalDespachos</h3>
+                                <p>Total Despacho</p>
+                            </div>
+                            <div class="icon"><i class="fas fa-box"></i></div>
+                            <a asp-controller="ListadoDespachos" asp-action="Index" class="small-box-footer">
+                                Más info <i class="fas fa-arrow-circle-right"></i>
+                            </a>
+                        </div>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-box"></i>
+                    <div class="col-lg-6 col-12">
+                        <div class="small-box bg-primary">
+                            <div class="inner">
+                                <h3>@Model.DespachosEnProceso</h3>
+                                <p>Despacho en Proceso</p>
+                            </div>
+                            <div class="icon"><i class="fas fa-truck-loading"></i></div>
+                            <a asp-controller="ListadoDespachos" asp-action="Index"
+                               asp-route-filtroEstado="@EstadoDespacho.EnProceso.ToString()" class="small-box-footer">
+                                Más info <i class="fas fa-arrow-circle-right"></i>
+                            </a>
+                        </div>
                     </div>
-                    <a asp-controller="ListadoDespachos" asp-action="Index" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+                    <div class="col-lg-6 col-12">
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3>@Model.DespachosCulminados</h3>
+                                <p>Despachos Culminados</p>
+                            </div>
+                            <div class="icon"><i class="fas fa-check-circle"></i></div>
+                            <a asp-controller="ListadoDespachos" asp-action="Index"
+                               asp-route-filtroEstado="@EstadoDespacho.Culminado.ToString()" class="small-box-footer">
+                                Más info <i class="fas fa-arrow-circle-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>@Model.IndicadorRendimiento<sup style="font-size: 20px">%</sup></h3>
+                                <p>Indicadores (Rendimiento)</p>
+                            </div>
+                            <div class="icon"><i class="fas fa-chart-pie"></i></div>
+                            <a href="#" class="small-box-footer">
+                                Más info <i class="fas fa-arrow-circle-right"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>@Model.DespachosEnProceso</h3>
-                        <p>Despacho en Proceso</p>
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h3 class="card-title mb-0"><i class="fas fa-calendar-alt me-2"></i>Calendario</h3>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-truck-loading"></i>
+                    <div class="card-body">
+                        <div id="calendar-widget-simple"></div>
                     </div>
-                    <a asp-controller="ListadoDespachos" asp-action="Index" asp-route-filtroEstado="@EstadoDespacho.EnProceso.ToString()" class="small-box-footer">
-                        Más info <i class="fas fa-arrow-circle-right"></i>
-                    </a>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>@Model.DespachosCulminados</h3>
-                        <p>Despachos Culminados</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <a asp-controller="ListadoDespachos" asp-action="Index" asp-route-filtroEstado="@EstadoDespacho.Culminado.ToString()" class="small-box-footer">
-                        Más info <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>@Model.IndicadorRendimiento<sup style="font-size: 20px">%</sup></h3>
-                        <p>Indicadores (Rendimiento)</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEventModalLabel">Agregar Tarea / Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="eventDate" class="form-label">Fecha seleccionada</label>
+                        <input type="text" class="form-control" id="eventDate" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventTitle" class="form-label">Título del evento</label>
+                        <input type="text" class="form-control" id="eventTitle" placeholder="Ej: Reunión de equipo" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar Evento (HU05)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        
+        const addEventModal = new bootstrap.Modal(document.getElementById('addEventModal'));
+        
+        const calendarEl = document.getElementById('calendar-widget-simple');
+
+        if (calendarEl) {
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                
+                initialView: 'dayGridMonth', 
+                locale: 'es', 
+                height: 'auto', 
+                headerToolbar: {
+                    left: 'prev', 
+                    center: 'title', 
+                    right: 'next'  
+                },
+
+                dateClick: function(info) {
+                    document.getElementById('eventDate').value = info.dateStr;
+                    
+                    addEventModal.show();
+                }
+            });
+
+            calendar.render();
+
+        } else {
+            console.error("Error: no se encontró el elemento #calendar-widget-simple");
+        }
+    });
+</script>
+}
