@@ -2,59 +2,12 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Iniciar Sesión";
+    ViewData["Title"] = "Inicio de Sesión";
+    Layout = "/Views/Shared/_Layout.cshtml"; // Usa el Layout Público
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Usa una cuenta local para ingresar.</h2>
-                <hr />
-                
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                    <label asp-for="Input.Email" class="form-label"></label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
-                </div>
-                
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" id="password-field" autocomplete="current-password" aria-required="true" />
-                    <label asp-for="Input.Password" class="form-label"></label>
-                    
-                    <span id="toggle-password" style="cursor: pointer; position: absolute; right: 10px; top: 35%; transform: translateY(-50%);">
-                        👁️
-                    </span>
-                    
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Continuar</button>
-                </div>
-
-                <!-- --- INICIO DE MODIFICACIÓN HU02 --- -->
-                <div class="mt-3">
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">¿Olvidaste tu contraseña?</a>
-                    </p>
-                </div>
-
-            </form>
-        </section>
-    </div>
-</div>
-
 @section Scripts {
+    <link rel="stylesheet" href="~/css/login-styles.css" asp-append-version="true" />
     <partial name="_ValidationScriptsPartial" />
 
     <script>
@@ -64,13 +17,67 @@
 
             if (togglePassword && passwordField) {
                 togglePassword.addEventListener('click', function (e) {
+                    // Cambia el tipo de input
                     const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
                     passwordField.setAttribute('type', type);
                     
-                    this.textContent = type === 'password' ? '👁️' : '🙈';
+                    // Cambia el ícono (usando FontAwesome)
+                    const icon = this.querySelector('i');
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
                 });
             }
         });
     </script>
 }
 
+<div class="login-container">
+    <div class="login-box">
+
+        <div class="login-logo">
+            <a class="login-logo-text" asp-controller="Home" asp-action="Index">Logistica <strong>BROKER</strong></a>
+        </div>
+
+        <h2 class="login-title">INICIO DE SESION</h2>
+        
+        <form id="account" method="post">
+            
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="hola@example.com" />
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" id="password-field" autocomplete="current-password" aria-required="true" placeholder="Contraseña" />
+                <label asp-for="Input.Password" class="form-label">Contraseña</label>
+                
+                <span id="toggle-password">
+                     <i class="fas fa-eye"></i> </span>
+                
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            
+            <div class="checkbox mb-3">
+                <label asp-for="Input.RememberMe" class="form-label">
+                    <input class="form-check-input" asp-for="Input.RememberMe" />
+                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                </label>
+            </div>
+
+            <div>
+                <button id="login-submit" type="submit" class="btn btn-primary">CONTINUAR</button>
+            </div>
+
+            <div class="login-links">
+                <a id="forgot-password" asp-page="./ForgotPassword">Go back</a>
+                 </div>
+        </form>
+    </div>
+
+    <div class="login-footer">
+        <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+    </div>
+</div>

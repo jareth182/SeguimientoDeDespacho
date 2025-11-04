@@ -1,8 +1,33 @@
 @{
     ViewData["Title"] = "Estado de su Envío";
+    Layout = "_AdminLayout"; // <-- ¡LA LÍNEA MÁGICA QUE FALTABA!
 }
 
-<div class="text-center">
-    <h1 class="display-4">Estado de su Envío</h1>
-    <p>Bienvenido, Cliente. Aquí puede ver el estado de su envío.</p>
-</div>
+<!-- El resto de tu contenido (puedes añadir el header y breadcrumb) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Estado de su Envío</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Estado de su Envío</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <p>Bienvenido, Cliente. Aquí puede ver el estado de su envío.</p>
+                <!-- Aquí irá la lógica de tu HU de seguimiento -->
+            </div>
+        </div>
+    </div>
+</section>
+
