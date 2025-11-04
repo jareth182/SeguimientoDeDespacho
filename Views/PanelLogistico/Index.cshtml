@@ -81,6 +81,35 @@
             </div>
 
             <div class="col-lg-4">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light">
+                        <h3 class="card-title mb-0"><i class="fas fa-tasks me-2"></i>Gestión Diaria</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="nav nav-pills flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    Agendado
+                                    <span id="contador-agendado" class="badge bg-primary float-end">@Model.TareasAgendadas.Count</span>
+                                </a>
+                                <ul id="lista-agendado" class="list-unstyled ps-4 pt-1 pb-1">
+                                    @foreach (var tarea in Model.TareasAgendadas)
+                                    {
+                                        <li data-id="@tarea.Id">
+                                            <i class="fas fa-xs fa-chevron-right me-1"></i> @tarea.Titulo
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    Mensajes
+                                    <span id="contador-mensajes" class="badge bg-danger float-end">@Model.MensajesNuevos.Count</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="card shadow-sm">
                     <div class="card-header bg-light">
                         <h3 class="card-title mb-0"><i class="fas fa-calendar-alt me-2"></i>Calendario</h3>
@@ -104,6 +133,8 @@
             </div>
             <div class="modal-body">
                 <form>
+                    @Html.AntiForgeryToken()
+
                     <div class="mb-3">
                         <label for="eventDate" class="form-label">Fecha seleccionada</label>
                         <input type="text" class="form-control" id="eventDate" readonly />
@@ -116,7 +147,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">Guardar Evento (HU05)</button>
+                
+                <button type="button" id="btnGuardarEvento" class="btn btn-primary">Guardar Evento (HU05)</button>
             </div>
         </div>
     </div>
@@ -128,6 +160,61 @@
         
         const addEventModal = new bootstrap.Modal(document.getElementById('addEventModal'));
         
+        // ---- INICIO DE LÓGICA HU05 (CRITERIO 2) ----
+        
+        $('#btnGuardarEvento').on('click', function () {
+            
+            // a. Obtener los datos del modal
+            var tituloEvento = $('#eventTitle').val();
+            var fechaEvento = $('#eventDate').val();
+            
+            // b. Obtener el token de seguridad
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            // c. Enviar datos al controlador vía AJAX
+            $.ajax({
+                url: '@Url.Action("GuardarEvento", "PanelLogistico")', // Llama a la acción del controlador
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: token, // Envía el token
+                    titulo: tituloEvento,
+                    fecha: fechaEvento
+                },
+                success: function (response) {
+                    if (response.success) {
+                        
+                        // d. Actualizar la lista "Agendado" dinámicamente
+                        var nuevaTarea = response.tarea;
+                        var tareaHtml = '<li data-id="' + nuevaTarea.id + '">' +
+                                        '<i class="fas fa-xs fa-chevron-right me-1"></i> ' +
+                                        nuevaTarea.titulo +
+                                      '</li>';
+                        $('#lista-agendado').append(tareaHtml);
+
+                        // e. Actualizar el contador "Agendado"
+                        var contadorSpan = $('#contador-agendado');
+                        var contadorActual = parseInt(contadorSpan.text()) || 0;
+                        contadorSpan.text(contadorActual + 1);
+
+                        // f. Cerrar y limpiar el modal
+                        addEventModal.hide();
+                        $('#eventTitle').val('');
+                        $('#eventDate').val('');
+
+                    } else {
+                        alert('Error al guardar: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('No se pudo conectar con el servidor.');
+                }
+            });
+        });
+        
+        // ---- FIN DE LÓGICA HU05 ----
+        
+        
+        // ---- INICIO LÓGICA HU04 (Tu script de calendario) ----
         const calendarEl = document.getElementById('calendar-widget-simple');
 
         if (calendarEl) {
@@ -144,7 +231,6 @@
 
                 dateClick: function(info) {
                     document.getElementById('eventDate').value = info.dateStr;
-                    
                     addEventModal.show();
                 }
             });
@@ -154,6 +240,7 @@
         } else {
             console.error("Error: no se encontró el elemento #calendar-widget-simple");
         }
+        // ---- FIN LÓGICA HU04 ----
     });
 </script>
 }
