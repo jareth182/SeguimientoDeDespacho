@@ -10,6 +10,30 @@
     <link rel="stylesheet" href="~/css/login-styles.css" asp-append-version="true" />
     <partial name="_ValidationScriptsPartial" />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <style>
+        /* 1. Hace que el contenedor 'form-floating' sea el punto de referencia */
+        .form-floating {
+            position: relative;
+        }
+
+        /* 2. Posiciona el icono del "ojito" */
+        #toggle-password {
+            position: absolute;
+            top: 50%; /* Lo centra verticalmente */
+            right: 1rem; /* 16px desde la derecha */
+            transform: translateY(-50%);
+            cursor: pointer;
+            z-index: 3; /* MUY importante: Pone el icono por encima del label */
+            color: #6c757d; /* Color gris */
+        }
+
+        /* 3. Añade espacio al input para que el texto no se pise con el icono */
+        #password-field {
+            padding-right: 3.5rem !important; 
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const togglePassword = document.getElementById('toggle-password');
@@ -30,7 +54,6 @@
         });
     </script>
 }
-
 <div class="login-container">
     <div class="login-box">
 

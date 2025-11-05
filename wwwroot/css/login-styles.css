@@ -96,3 +96,29 @@ body {
     color: #555;
     text-decoration: none;
 }
+
+.form-floating {
+    position: relative;
+}
+
+/* 2. Posiciona el icono del "ojito" */
+#toggle-password {
+    position: absolute;
+    top: 50%; /* Lo centra verticalmente */
+    right: 1rem; /* 16px desde la derecha */
+    transform: translateY(-50%); /* Ajuste fino de la posición vertical */
+    
+    cursor: pointer;
+    
+    /* Z-index: 3 - Esto es MUY importante.
+       Hace que el icono esté por encima del <label> (z-index: 2) 
+       y del <input> (z-index: 1) de form-floating. */
+    z-index: 3; 
+    
+    color: #6c757d; /* Color gris */
+}
+
+#password-field {
+    /* Ajusta este 'padding-right' si el icono se ve muy pegado */
+    padding-right: 3.5rem !important; 
+}
