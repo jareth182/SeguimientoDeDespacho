@@ -139,6 +139,11 @@
                         <label for="eventDate" class="form-label">Fecha seleccionada</label>
                         <input type="text" class="form-control" id="eventDate" readonly />
                     </div>
+
+                    <div class="mb-3">
+                        <label for="eventTime" class="form-label">Hora del evento (Opcional)</label>
+                        <input type="time" class="form-control" id="eventTime" />
+                    </div>
                     <div class="mb-3">
                         <label for="eventTitle" class="form-label">Título del evento</label>
                         <input type="text" class="form-control" id="eventTitle" placeholder="Ej: Reunión de equipo" />
@@ -155,20 +160,44 @@
 </div>
 
 @section Scripts {
+
+<style>
+    /* Reduce el tamaño del título (ej. "noviembre de 2025") */
+    .fc-toolbar-title {
+        font-size: 1.25rem !important; /* Más pequeño */
+        line-height: 1.2;
+    }
+
+    /* Reduce el tamaño de los botones (flechas) */
+    .fc .fc-button {
+        font-size: 0.8rem !important;
+        padding: 0.2rem 0.4rem !important; /* Menos espacio interior */
+        line-height: 1.2;
+    }
+
+    /* Reduce el tamaño de los nombres de los días (dom, lun, mar...) */
+    .fc .fc-col-header-cell a {
+        font-size: 0.8rem;
+    }
+</style>
+
 <script>
     $(document).ready(function () {
         
         const addEventModal = new bootstrap.Modal(document.getElementById('addEventModal'));
-        
-        // --- AÑADIDO: Declarar 'calendar' aquí para que AJAX lo pueda usar ---
         var calendar; 
+
+        // --- AÑADIDO: Inicializar el Toast de Bootstrap (asume que el HTML está en _AdminLayout) ---
+        const eventoToastEl = document.getElementById('eventoToast');
+        const eventoToast = eventoToastEl ? new bootstrap.Toast(eventoToastEl) : null;
         
-        // ---- INICIO DE LÓGICA HU05 (CRITERIO 2) ----
-        
+        // ---- LÓGICA HU05 (Guardar Evento) ----
         $('#btnGuardarEvento').on('click', function () {
             
+            // --- CAMBIO: Obtener la hora ---
             var tituloEvento = $('#eventTitle').val();
             var fechaEvento = $('#eventDate').val();
+            var horaEvento = $('#eventTime').val(); // <-- AÑADIDO
             var token = $('input[name="__RequestVerificationToken"]').val();
 
             $.ajax({
@@ -177,11 +206,13 @@
                 data: {
                     __RequestVerificationToken: token, 
                     titulo: tituloEvento,
-                    fecha: fechaEvento
+                    fecha: fechaEvento,
+                    hora: horaEvento // <-- AÑADIDO
                 },
                 success: function (response) {
                     if (response.success) {
                         
+                        // Actualizar lista
                         var nuevaTarea = response.tarea;
                         var tareaHtml = '<li data-id="' + nuevaTarea.id + '">' +
                                         '<i class="fas fa-xs fa-chevron-right me-1"></i> ' +
@@ -189,17 +220,26 @@
                                       '</li>';
                         $('#lista-agendado').append(tareaHtml);
 
+                        // Actualizar contador
                         var contadorSpan = $('#contador-agendado');
                         var contadorActual = parseInt(contadorSpan.text()) || 0;
                         contadorSpan.text(contadorActual + 1);
 
+                        // Limpiar y cerrar modal
                         addEventModal.hide();
                         $('#eventTitle').val('');
                         $('#eventDate').val('');
+                        $('#eventTime').val(''); // <-- AÑADIDO
 
-                        // --- AÑADIDO: Refrescar el calendario para mostrar el nuevo evento ---
+                        // Refrescar calendario
                         if (calendar) {
                             calendar.refetchEvents();
+                        }
+
+                        // --- AÑADIDO: Mostrar notificación "Toast" ---
+                        if(eventoToast) {
+                            $('#eventoToast .toast-body').text('Evento "' + nuevaTarea.titulo + '" guardado.');
+                            eventoToast.show();
                         }
                         // --- FIN DE CÓDIGO AÑADIDO ---
 
@@ -212,33 +252,46 @@
                 }
             });
         });
+        // ---- FIN LÓGICA HU05 ----
         
-        // ---- FIN DE LÓGICA HU05 ----
         
-        
-        // ---- INICIO LÓGICA HU04 (Tu script de calendario) ----
+        // ---- INICIO LÓGICA HU04 (Calendario) ----
         const calendarEl = document.getElementById('calendar-widget-simple');
 
         if (calendarEl) {
-            // --- AÑADIDO: Asignar a la variable global ---
             calendar = new FullCalendar.Calendar(calendarEl, {
                 
-                // --- AÑADIDO: Cargar eventos desde el controlador (GET) ---
                 events: '@Url.Action("ObtenerEventos", "PanelLogistico")',
 
-                initialView: 'dayGridMonth', 
-                locale: 'es', 
-                height: 'auto', 
-                headerToolbar: {
-                    left: 'prev', 
-                    center: 'title', 
-                    right: 'next'  
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); 
+                    window.location.href = '@Url.Action("EventoDetails", "PanelLogistico")/' + info.event.id;
                 },
 
                 dateClick: function(info) {
                     document.getElementById('eventDate').value = info.dateStr;
                     addEventModal.show();
+                },
+                
+                initialView: 'dayGridMonth', 
+                locale: 'es', 
+                height: 'auto', 
+                dayHeaderFormat: { weekday: 'short' }, // lun, mar...
+                
+                // --- AÑADIDO: Formato para mostrar la hora en el evento ---
+                eventTimeFormat: { 
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                // --- FIN DE CÓDIGO AÑADIDO ---
+                
+                headerToolbar: {
+                    left: 'prev',
+                    center: 'title',
+                    right: 'next'
                 }
+                
             });
 
             calendar.render();

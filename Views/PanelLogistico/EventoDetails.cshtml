@@ -1,0 +1,60 @@
+@model SeguimientoDeDespacho.Models.Tarea
+@{
+    ViewData["Title"] = "Detalles del Evento";
+    Layout = "_AdminLayout";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>Detalles para el evento: @Model.Titulo</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                Información del Evento
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.Titulo)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.Titulo)
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.Fecha)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.Fecha)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="#" class="btn btn-warning">Editar Evento</a>
+            
+            <a asp-action="Index" class="btn btn-secondary">Volver al Dashboard</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                Zona de Peligro
+            </div>
+            <div class="card-body">
+                <p>Al eliminar este evento, se borrará permanentemente de la lista "Agendado" y del calendario.</p>
+                
+                <form asp-action="EliminarEvento">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Eliminar Permanentemente" class="btn btn-danger w-100" />
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,19 +1,56 @@
+@model IEnumerable<SeguimientoDeDespacho.Models.Despacho>
 @{
     ViewData["Title"] = "Listado de Despachos (HU09)";
-    Layout = "_AdminLayout"; // <-- ¡AÑADE ESTA LÍNEA AL INICIO!
+    Layout = "_AdminLayout";
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>Esta es la página placeholder para la HU09 (Listado de Despachos).</p>
+<p>Aquí se muestra el listado completo de despachos registrados en el sistema.</p>
 
 <hr />
 
-@if(ViewData["FiltroAplicado"] != null)
+@if (ViewData["FiltroAplicado"] != null)
 {
     <div class="alert alert-info">
-        <strong>Criterio 3 (HU03) CUMPLIDO:</strong>
-        El filtro se aplicó correctamente.
-        <br>
-        Estado solicitado: <strong>@ViewData["FiltroAplicado"]</strong>
+        Mostrando resultados filtrados por el estado: <strong>@ViewData["FiltroAplicado"]</strong>
     </div>
 }
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.NumeroGuia)</th>
+                    <th>@Html.DisplayNameFor(model => model.ClienteNombre)</th>
+                    <th>@Html.DisplayNameFor(model => model.Estado)</th>
+                    <th>@Html.DisplayNameFor(model => model.FechaCreacion)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.NumeroGuia)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ClienteNombre)</td>
+                        <td>
+                            @if (item.Estado == EstadoDespacho.EnProceso) {
+                                <span class="badge bg-primary">En Proceso</span>
+                            } else if (item.Estado == EstadoDespacho.Culminado) {
+                                <span class="badge bg-success">Culminado</span>
+                            } else {
+                                <span class="badge bg-secondary">@item.Estado.ToString()</span>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.FechaCreacion)</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Ver</a>
+                            <a href="#" class="btn btn-sm btn-warning">Editar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
